@@ -1,3 +1,53 @@
 #!/bin/sh
+# vim: set ft=sh
 
-echo '{"version":{"ref":"none"}}'
+set -e
+
+exec 3>&1 # make stdout available as fd 3 for the result
+exec 1>&2 # redirect all output to stderr for logging
+
+source=$1
+
+if [ -z "$source" ]; then
+  echo "usage: $0 <path/to/source>"
+  exit 1
+fi
+
+cd $source
+
+
+# Parse source settings
+source $(dirname $0)/common.sh
+
+jfrog_args="--url=$url --user=$user --password=$password"
+
+cd $source
+
+file=$(jq -r '.params.file // ""' < $request_payload)
+if [ -z "$file" ]; then
+	echo "invalid request (missing file)"
+	exit 1
+fi
+
+filename=$(find $file -type f -exec basename {} \;)
+if [ -z "$filename" ]; then
+	echo "couldnt find file $file"
+	exit 1
+fi
+
+fileversion=$(echo $filename | sed -E "s/$regexp/\1/")
+if [ -z "$fileversion" ]; then
+	echo "couldnt find version in $filename"
+	exit 1
+fi
+
+# artifactory_upload path/to/file version
+jfrog rt upload $file "$path/$filename" --props="version=$fileversion" $jfrog_args
+
+
+echo '{"version": { "version": "'$version'"}, "metadata": []}' >&3
+
+
+
+
+

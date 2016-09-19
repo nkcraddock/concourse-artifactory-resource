@@ -4,6 +4,8 @@ MAINTAINER Nathan Craddock <nkcraddock@gmail.com>
 RUN set -ex \
 	&& apk update \
 	&& apk add --no-cache \
+			tar \
+			curl \
 			git \
 			jq 
 

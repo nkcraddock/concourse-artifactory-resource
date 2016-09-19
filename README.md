@@ -6,17 +6,13 @@ Versions objects in artifactory using the [jfrog cli](https://github.com/JFrogDe
 
 * `url`: *Required.* The url of the artifactory server
 
-* `repo`: *Required.* The name of the repo in artifactory. 
+* `path`: *Required.* The path to the directory in artifactory
 
-* `user`: *Optional.* The artifactory user
+* `user`: *Required.* The artifactory user
 
-* `password`: *Optional.* The artifactory password
+* `password`: *Required.* The artifactory password
 
-* `apikey`: *Optional.* The artifactory api key
-
-* `ssh-key`: *Optional.* The SSH key file when authenticating with RSA keys
-
-* `regexp`: *Optional.* The pattern to match filenames against within artifactory. The first grouped match is used to extract the version, or if a group is explicitly named `version`, that group is used. At least one capture group must be specified, with parentheses then you can keep the file name the same and upload new versions of your file without resorting to version numbers. This property is the path to the file in your artifactory repo. 
+* `regexp`: *Required.* The regular expression to match the file. Note: There must be a capture group that will match the semver in the filename. 
 
 ## Behavior
 
@@ -33,15 +29,9 @@ Places the following files in the destination:
 
 * `(filename)`: The file fetched from the bucket.
 
-* `url`: A file containing the URL of the object. If `private` is true, this
-  URL will be signed.
-
-* `version`: The version identified in the file name.
-
 #### Parameters
 
-*None.*
-
+* `explode`: *Optional.* If `true`, the downloaded file will be untarred. (Defaults to `false)
 
 ### `out`: Upload an object to the bucket.
 
@@ -54,7 +44,6 @@ Given a file specified by `file`, upload it to the artifactory repo. The new fil
   matches will be placed into the directory structure on artifactory as defined in `regexp`
   in the resource definition. The matching syntax is bash glob expansion, so
   no capture groups, etc.
-
 
 ## Example Configuration
 
@@ -77,8 +66,8 @@ resource_types:
   type: artifactory
   source:
     url: https://my-artifactory-server
-    repo: my-company-release
-    regexp: my-app/my-app-(.*).tgz
+    path: repo/my-app
+		regexp: my-app-(.*).tgz
     user: ARTIFACTORY_USER
     password: ARTIFACTORY_PASSWORD
 ```
@@ -87,6 +76,7 @@ resource_types:
 
 ``` yaml
 - get: release
+	params: { explode: true }
 ```
 
 ``` yaml
