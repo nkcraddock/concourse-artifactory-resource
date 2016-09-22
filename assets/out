@@ -45,7 +45,7 @@ fi
 jfrog rt upload $file "$path/$filename" --props="version=$fileversion" $jfrog_args
 
 
-echo '{"version": { "version": "'$version'"}, "metadata": []}' >&3
+echo '{"version": { "version": "'$fileversion'"}, "metadata": []}' >&3
 
 
 
