@@ -32,3 +32,5 @@ if [ -z "$regexp" ]; then
 	exit 1
 fi
 
+jfrog_args="--url=$url --user=$user --password=$password"
+

@@ -19,8 +19,6 @@ cd $source
 # Parse source settings
 source $(dirname $0)/common.sh
 
-jfrog_args="--url=$url --user=$user --password=$password"
-
 cd $source
 
 file=$(jq -r '.params.file // ""' < $request_payload)
@@ -44,10 +42,5 @@ fi
 # artifactory_upload path/to/file version
 jfrog rt upload $file "$path/$filename" --props="version=$fileversion" $jfrog_args
 
-
 echo '{"version": { "version": "'$fileversion'"}, "metadata": []}' >&3
-
-
-
-
 
