@@ -4,7 +4,7 @@ Versions objects in artifactory using the [jfrog cli](https://github.com/JFrogDe
 
 ## Source Configuration
 
-* `url`: *Required.* The url of the artifactory server
+* `url`: *Required.* The base url of the artifactory server API
 
 * `path`: *Required.* The path to the directory in artifactory
 
@@ -12,7 +12,10 @@ Versions objects in artifactory using the [jfrog cli](https://github.com/JFrogDe
 
 * `password`: *Required.* The artifactory password
 
-* `regexp`: *Required.* The regular expression to match the file. Note: There must be a capture group that will match the semver in the filename. 
+* `regexp`: *Required.* The regular expression to match the file. There must be a capture group that will match the semver in the filename. For example, `my-app-(.*).tgz` has a capture group which would match files such as
+
+  * `my-app-0.0.1.tgz`
+  * `my-app-1.22.3-rc.123.tgz`
 
 ## Behavior
 
@@ -25,31 +28,28 @@ object's filename is the resulting version.
 
 ### `in`: Fetch an object from the bucket.
 
-Places the following files in the destination:
-
-* `(filename)`: The file fetched from the bucket.
+Places the file fetched from the bucket in the destination.
 
 #### Parameters
 
-* `explode`: *Optional.* If `true`, the downloaded file will be untarred. (Defaults to `false)
+* `explode`: *Optional.* If `true`, the downloaded file will be untarred. (Defaults to `false`)
 
 ### `out`: Upload an object to the bucket.
 
-Given a file specified by `file`, upload it to the artifactory repo. The new file will be uploaded to the directory that the regex searches in. 
+Given a file specified by `file`, upload it to the artifactory repo. The new file will be uploaded to the directory that the regex searches in.
 
 #### Parameters
 
-* `file`: *Required.* Path to the file to upload, provided by an output of a task.
-  If multiple files are matched by the glob, an error is raised. The file which
-  matches will be placed into the directory structure on artifactory as defined in `regexp`
-  in the resource definition. The matching syntax is bash glob expansion, so
-  no capture groups, etc.
+* `file`: *Required.* Path or glob to the file to upload, provided by an output of a task. If multiple files are matched by the glob, an error is raised. The file which
+matches will be placed into the directory structure on artifactory as defined by the `path` parameter
+in the resource definition. The matching syntax is `bash` glob expansion, so
+no capture groups, etc.
 
 ## Example Configuration
 
 ### Resource Type
 
-You have to add the resource type. 
+You have to add the resource type.
 
 ``` yaml
 resource_types:
@@ -65,9 +65,9 @@ resource_types:
 - name: release
   type: artifactory
   source:
-    url: https://my-artifactory-server
+    url: https://artifactory.example.org/artifactory
     path: repo/my-app
-		regexp: my-app-(.*).tgz
+    regexp: my-app-(.*).tgz
     user: ARTIFACTORY_USER
     password: ARTIFACTORY_PASSWORD
 ```
@@ -76,7 +76,7 @@ resource_types:
 
 ``` yaml
 - get: release
-	params: { explode: true }
+  params: { explode: true }
 ```
 
 ``` yaml
