@@ -1,4 +1,4 @@
-FROM golang:1.6-alpine
+FROM golang:1.8.3-alpine3.6
 MAINTAINER Nathan Craddock <nkcraddock@gmail.com>
 
 RUN set -ex \
